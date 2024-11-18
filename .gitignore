@@ -1,3 +1,8 @@
-# Ignore the backend virtual environment
+# This file is used to ignore files and directories from being pushed to the repository.
 backend/venv/
 .ENV
+db.sqlite3
+/backend/shopwise_backend/accounts/__pycache__/
+/backend/shopwise_backend/api/__pycache__/
+/backend/shopwise_backend/shopwise_backend/__pycache__/
+/scraper/__pycache__/
