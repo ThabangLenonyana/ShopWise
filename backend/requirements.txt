@@ -1,3 +1,4 @@
+# Core dependencies
 python-dotenv
 django
 djangorestframework
@@ -5,4 +6,10 @@ azure-search-documents
 azure-ai-textanalytics 
 python-dotenv
 djangorestframework-simplejwt
+
+# Testing dependencies
+pytest
+pytest-django
+pytest-cov
+coverage
 
