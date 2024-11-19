@@ -3,11 +3,31 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
 
 User = get_user_model()
 
 
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            'Valid Login Response',
+            value={
+                'access': 'eyJ0eXAiOiJKV1QiLCJhbGc...',
+                'refresh': 'eyJ0eXAiOiJKV1QiLCJhbGc...',
+                'user': {
+                    'id': 1,
+                    'email': 'user@example.com',
+                    'username': 'testuser',
+                    'first_name': 'John',
+                    'last_name': 'Doe'
+                }
+            }
+        )
+    ]
+)
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Serializer for JWT token generation with additional user info."""
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -35,8 +55,23 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            'Valid User Registration',
+            value={
+                'email': 'user@example.com',
+                'username': 'testuser',
+                'password': 'SecurePass123!',
+                'password2': 'SecurePass123!',
+                'first_name': 'John',
+                'last_name': 'Doe'
+            }
+        )
+    ]
+)
 class UserSerializer(serializers.ModelSerializer):
-    """Serializer for user registration."""
+    """Serializer for user registration and management."""
 
     password = serializers.CharField(
         write_only=True,
