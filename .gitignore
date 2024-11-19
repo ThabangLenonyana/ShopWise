@@ -5,4 +5,8 @@ db.sqlite3
 /backend/shopwise_backend/accounts/__pycache__/
 /backend/shopwise_backend/api/__pycache__/
 /backend/shopwise_backend/shopwise_backend/__pycache__/
-/scraper/__pycache__/
+scraper/env/
+.env/
+scraper/myproject/spiders/__pycache__/
+scraper/myproject/__pycache__/
+scraper/myproject/utils/__pycache__/
