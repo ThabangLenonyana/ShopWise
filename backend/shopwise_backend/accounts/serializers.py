@@ -1,8 +1,13 @@
+# Core Imports
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+# Authentication
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+# Documentation and API schema with OpenAPI Swagger Tools
 from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
 
 User = get_user_model()
@@ -120,3 +125,21 @@ class UserSerializer(serializers.ModelSerializer):
                 validated_data.get('password'))
 
         return super().update(instance, validated_data)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'avatar', 'postal_code', 'surbub', 'phone_number')
+        read_only_fields = ('email',)
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    new_password = serializers.CharField(
+        min_length=8, validators=[validate_password], write_only=True)
