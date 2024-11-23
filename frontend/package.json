@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@fontsource/poppins": "^5.1.0",
     "@mui/icons-material": "^5.15.7",
     "@mui/material": "^5.15.7",
     "@testing-library/jest-dom": "^5.17.0",
