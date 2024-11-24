@@ -61,3 +61,40 @@ export const verifyEmail = async (token) => {
     throw handleApiError(error);
   }
 };
+
+export const fetchUserProfile = async () => {
+
+  const token = localStorage.getItem('token');
+    console.log('Token being sent:', token);
+
+    if (!token) {
+      throw new Error('User is not logged in');
+    }
+    
+  try {
+
+    const response = await axios.get(`${API_URL}/profile/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+    return response;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+export const updateUserProfile = async (profileData) => {
+  try {
+    const response = await axios.put(`${API_URL}/profile/`, profileData, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      
+      }
+    });
+    return response;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+}
