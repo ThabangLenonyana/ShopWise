@@ -28,9 +28,9 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
 
     # Required fields for user model
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
-
+    REQUIRED_FIELDS = ['username']
     # Meta data for user model
+
     class Meta:
         db_table = 'users'
         verbose_name = 'user'

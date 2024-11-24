@@ -31,16 +31,27 @@ export const login = async (email, password) => {
   }
 };
 
-export const register = async (username, email, password, password2, firstName, lastName) => {
+export const register = async (email, username, password, password2,) => {
   try {
     const response = await axios.post(`${API_URL}/register/`, {
-      username,
       email,
+      username,
       password,
       password2,
-      first_name: firstName, 
-      last_name: lastName
     }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    return response;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+export const verifyEmail = async (token) => {
+  try {
+    const response = await axios.post(`${API_URL}/verify-email/`, { token }, {
       headers: {
         'Content-Type': 'application/json',
       }

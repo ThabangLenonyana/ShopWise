@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import './App.css';
+import VerifyEmail from './pages/VerifyEmail';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/verify-email/:token" element={<VerifyEmail />} />
           </Routes>
         </main>
       </div>
