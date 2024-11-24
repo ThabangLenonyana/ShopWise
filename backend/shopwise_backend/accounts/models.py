@@ -10,7 +10,7 @@ class User(AbstractUser):
     # User model fields
     email = models.EmailField(_('email address'), unique=True)
     postal_code = models.CharField(max_length=5, blank=True)
-    surbub = models.CharField(max_length=50, blank=True)
+    suburb = models.CharField(max_length=50, blank=True)
     phone_number = models.CharField(max_length=10, blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 
