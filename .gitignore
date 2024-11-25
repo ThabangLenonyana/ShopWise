@@ -10,3 +10,4 @@ scraper/env/
 scraper/myproject/spiders/__pycache__/
 scraper/myproject/__pycache__/
 scraper/myproject/utils/__pycache__/
+env/

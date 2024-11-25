@@ -10,10 +10,6 @@ This directory contains the backend code for the ShopWise platform, including RE
 
   Contains the implementation of the **_products_** endpoint, which allows users to retrieve product data and recommendations.
 
-- `api/products/search/`:
-
-  Contains the implementation of the **_search_** endpoint, which allows users to search for products based on their name.
-
 - `api/products/categories/`:
 
   Contains the implementation of the **_categories_** endpoint, which allows users to retrieve all product categories.

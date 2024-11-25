@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Products
+from .models import Products, Categories, Retailers, Prices, Favourite
 from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
 
 @extend_schema_serializer(
@@ -25,17 +25,33 @@ from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
         )
     ]
 )
-
 class ProductSerializer(serializers.ModelSerializer):
+    current_price = serializers.SerializerMethodField()
+    retailer_name = serializers.CharField(source='retailer.name')
+    category_name = serializers.CharField(source='category.name')
+
     class Meta:
         model = Products
-        fields = '__all__'
-        read_only_fields = ('created_at',) # Prevents the created_at field from being modified
-        
-    def validate_name(self, value):
-        """Custom validation for the name field."""
-        if len(value) < 3:
-            raise serializers.ValidationError("Name must be at least 3 characters long")
-        return value
-        
+        fields = ['id', 'name', 'image_url', 'product_url', 'description', 
+                 'created_at', 'category_name', 
+                 'retailer_name', 'current_price']
 
+    def get_current_price(self, obj):
+        latest_price = Prices.objects.filter(product=obj).order_by('-created_at').first()
+        return latest_price.price if latest_price else None
+        
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categories
+        fields = '__all__'
+        
+class RetailerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Retailers
+        fields = '__all__'
+
+class FavouriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favourite
+        fields = ['id', 'product', 'user', 'notify_price_drop', 'target_price', 'notes', 'created_at']
+        read_only_fields = ['user', 'created_at']

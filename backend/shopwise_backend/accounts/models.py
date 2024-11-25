@@ -12,7 +12,8 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
-        db_table = 'Users'
+        db_table = 'users' 
+        managed = False 
         verbose_name = 'user'
         verbose_name_plural = 'users'
 
