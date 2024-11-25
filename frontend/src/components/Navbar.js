@@ -1,34 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Container, Avatar, IconButton, Tooltip, } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link, useNavigate } from 'react-router-dom';
-import { fetchUserProfile } from '../services/auth.js';
+import { useAuth } from '../context/authContext';
 import '../styles/Navbar.css';
 import '@fontsource/poppins/700.css';
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
+  const {user, logout} = useAuth(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadUserProfile = async () => {
-      try {
-        const response = await fetchUserProfile();
-        setUser(response.data);
-      } catch (error) {
-        console.error('Failed to load user profile', error);
-      }
-    }
-
-    const token = localStorage.getItem('token');
-    if (token) {
-      loadUserProfile();
-    }
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
+    logout();
     navigate('/');
   };
 

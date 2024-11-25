@@ -15,7 +15,7 @@ const handleApiError = (error) => {
   throw new Error('An unexpected error occurred. Please try again later.');
 };
 
-export const login = async (email, password) => {
+export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${API_URL}/login/`, {
       email,
