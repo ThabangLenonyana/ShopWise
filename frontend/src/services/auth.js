@@ -15,7 +15,7 @@ const handleApiError = (error) => {
   throw new Error('An unexpected error occurred. Please try again later.');
 };
 
-export const login = async (email, password) => {
+export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${API_URL}/login/`, {
       email,
@@ -31,15 +31,13 @@ export const login = async (email, password) => {
   }
 };
 
-export const register = async (username, email, password, password2, firstName, lastName) => {
+export const register = async (email, username, password, password2,) => {
   try {
     const response = await axios.post(`${API_URL}/register/`, {
-      username,
       email,
+      username,
       password,
       password2,
-      first_name: firstName, 
-      last_name: lastName
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -50,3 +48,53 @@ export const register = async (username, email, password, password2, firstName, 
     throw handleApiError(error);
   }
 };
+
+export const verifyEmail = async (token) => {
+  try {
+    const response = await axios.post(`${API_URL}/verify-email/`, { token }, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    return response;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+export const fetchUserProfile = async () => {
+
+  const token = localStorage.getItem('token');
+    console.log('Token being sent:', token);
+
+    if (!token) {
+      throw new Error('User is not logged in');
+    }
+    
+  try {
+
+    const response = await axios.get(`${API_URL}/profile/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+    return response;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+export const updateUserProfile = async (profileData) => {
+  try {
+    const response = await axios.put(`${API_URL}/profile/`, profileData, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      
+      }
+    });
+    return response;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+}
