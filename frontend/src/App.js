@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import './App.css';
 import VerifyEmail from './pages/VerifyEmail';
 import Profile from './pages/Profile';
+import Products from './pages/Products';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/verify-email/:token" element={<VerifyEmail />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/products" element={<Products />} />
             </Routes>
           </main>
         </div>
