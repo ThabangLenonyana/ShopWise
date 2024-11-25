@@ -133,6 +133,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   'avatar', 'postal_code', 'suburb', 'phone_number')
         read_only_fields = ('email',)
 
+    def update(self, instance, validated_data):
+        """Update and return an existing user."""
+        validated_data.pop('password2', None)
+
+        if 'password' in validated_data:
+            validated_data['password'] = make_password(
+                validated_data.get('password'))
+
+        return super().update(instance, validated_data)
+
 
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()

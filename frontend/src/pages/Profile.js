@@ -197,7 +197,7 @@ const Profile = () => {
                       fullWidth
                       label="Email"
                       name="email"
-                      value={profileData.email}
+                      value={profileData.email || ''}
                       disabled
                     />
                   </Grid>
@@ -206,7 +206,7 @@ const Profile = () => {
                       fullWidth
                       label="Username"
                       name="username"
-                      value={profileData.username}
+                      value={profileData.username || ''}
                       onChange={handleChange}
                       error={!!errors.username}
                       helperText={errors.username}
@@ -217,7 +217,7 @@ const Profile = () => {
                       fullWidth
                       label="First Name"
                       name="first_name"
-                      value={profileData.first_name}
+                      value={profileData.first_name || ''}
                       onChange={handleChange}
                       error={!!errors.first_name}
                       helperText={errors.first_name}
@@ -228,7 +228,7 @@ const Profile = () => {
                       fullWidth
                       label="Last Name"
                       name="last_name"
-                      value={profileData.last_name}
+                      value={profileData.last_name || ''}
                       onChange={handleChange}
                       error={!!errors.last_name}
                       helperText={errors.last_name}
@@ -287,7 +287,7 @@ const Profile = () => {
                       label="Current Password"
                       name="current_password"
                       type="password"
-                      value={profileData.current_password}
+                      value={profileData.current_password || ''}
                       onChange={handleChange}
                     />
                   </Grid>
@@ -297,7 +297,7 @@ const Profile = () => {
                       label="New Password"
                       name="new_password"
                       type="password"
-                      value={profileData.new_password}
+                      value={profileData.new_password || ''}
                       onChange={handleChange}
                     />
                   </Grid>
@@ -307,7 +307,7 @@ const Profile = () => {
                       label="Confirm New Password"
                       name="confirm_new_password"
                       type="password"
-                      value={profileData.confirm_new_password}
+                      value={profileData.confirm_new_password || ''}
                       onChange={handleChange}
                       error={!!errors.confirm_new_password}
                       helperText={errors.confirm_new_password}

@@ -87,9 +87,10 @@ export const fetchUserProfile = async () => {
 
 export const updateUserProfile = async (profileData) => {
   try {
-    const response = await axios.put(`${API_URL}/profile/`, profileData, {
+    const response = await axios.patch(`${API_URL}/profile/`, profileData, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'multipart/form-data',
       
       }
     });
