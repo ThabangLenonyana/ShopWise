@@ -1,5 +1,6 @@
 # This file is used to ignore files and directories from being pushed to the repository.
 backend/venv/
+virtualenv/
 .ENV
 db.sqlite3
 /backend/shopwise_backend/accounts/__pycache__/
@@ -10,3 +11,4 @@ scraper/env/
 scraper/myproject/spiders/__pycache__/
 scraper/myproject/__pycache__/
 scraper/myproject/utils/__pycache__/
+env/
