@@ -1,8 +1,14 @@
-# accounts/tests.py
-from django.test import TestCase
+# Core Imports
 from django.urls import reverse
-from rest_framework.test import APITestCase
 from rest_framework import status
+from django.utils import timezone
+from datetime import timedelta
+
+# Test Suites
+from django.test import TestCase
+from rest_framework.test import APITestCase
+
+# Models
 from .models import User
 
 
@@ -76,6 +82,55 @@ class AuthenticationTests(APITestCase):
 
         response = self.client.post(self.login_url, data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_email_verification(self):
+        """Test email verification process."""
+
+        # Create unverified user
+        user = User.objects.create_user(
+            username='unverified',
+            email='unverified@example.com',
+            password='TestPass123!',
+            first_name='Unverified',
+            last_name='User'
+        )
+        self.assertFalse(user.is_email_verified)
+
+        # Mock email verification token
+        user.email_verification_token = 'test-token'
+        user.email_verification_token_expires = timezone.now() + timedelta(hours=24)
+        user.save()
+
+        # Test verification endpoint
+        verify_url = reverse('verify-email')
+        response = self.client.post(verify_url, {'token': 'test-token'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.is_email_verified)
+
+    def test_password_reset_request(self):
+        """Test password reset request flow."""
+        # Request password reset
+        reset_request_url = reverse('password-reset')
+        response = self.client.post(reset_request_url, {
+            'email': self.test_user.email
+        })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_email_verification_invalid_token(self):
+        """Test email verification with invalid token."""
+        verify_url = reverse('verify-email')
+        response = self.client.post(verify_url, {'token': 'invalid-token'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_password_reset_invalid_email(self):
+        """Test password reset request with non-existent email."""
+        reset_request_url = reverse('password-reset')
+        response = self.client.post(reset_request_url, {
+            'email': 'nonexistent@example.com'
+        })
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class UserModelTests(TestCase):
