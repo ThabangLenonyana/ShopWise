@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from .services.recommendation_service import RecommendationService
 
 class ProductPagination(PageNumberPagination):
     page_size = 10
@@ -232,3 +233,16 @@ class FavoriteToggleView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+@extend_schema(
+    description='Get product recommendations based on user interactions',
+    responses=ProductSerializer(many=True)
+)
+class ProductRecommendationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        recommendations = RecommendationService.get_recommendations(user)
+        serializer = ProductSerializer(recommendations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
