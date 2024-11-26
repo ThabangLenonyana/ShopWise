@@ -12,3 +12,9 @@ scraper/myproject/spiders/__pycache__/
 scraper/myproject/__pycache__/
 scraper/myproject/utils/__pycache__/
 env/
+backend/shopwise_backend/accounts/migrations/__pycache__/__init__.cpython-312.pyc
+backend/shopwise_backend/accounts/services/__pycache__/email.cpython-312.pyc
+backend/shopwise_backend/api/migrations/__pycache__/0001_initial.cpython-312.pyc
+backend/shopwise_backend/api/migrations/__pycache__/__init__.cpython-312.pyc
+backend/shopwise_backend/accounts/migrations/__pycache__/0003_alter_user_options.cpython-312.pyc
+backend/shopwise_backend/accounts/migrations/__pycache__/0002_rename_surbub_user_suburb.cpython-312.pyc
