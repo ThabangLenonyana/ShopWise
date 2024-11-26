@@ -8,6 +8,8 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 class ProductPagination(PageNumberPagination):
     page_size = 10
@@ -58,8 +60,9 @@ class ProductFilter(filters.FilterSet):
     ],
     responses=ProductSerializer(many=True)
 )
+@method_decorator(cache_page(60*15), name='dispatch')
 class ProductListView(generics.ListAPIView):
-    queryset = Products.objects.all()
+    queryset = Products.objects.select_related('retailer', 'category').prefetch_related('prices').all()
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
     filter_backends = (

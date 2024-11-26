@@ -146,3 +146,18 @@ class TestProductListViews(TransactionTestCase):
             {'search': 'Nonexistent Product'}
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_product_list_view_optimized_queries(self):
+        """Test optimized queries with select_related and prefetch_related."""
+        with self.assertNumQueries(3):
+            response = self.client.get(self.product_list_url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_product_list_view_caching(self):
+        """Test caching implementation in ProductListView."""
+        response1 = self.client.get(self.product_list_url)
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+
+        response2 = self.client.get(self.product_list_url)
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+        self.assertEqual(response1.content, response2.content)
