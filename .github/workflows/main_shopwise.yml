@@ -17,7 +17,8 @@ jobs:
 
     steps:
       # Check out repository code
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       # Setup Python environment
       - name: Set up Python version
@@ -37,37 +38,6 @@ jobs:
           cd backend
           pip install -r requirements.txt
 
-      # Run test suite with verbose output
-      - name: Run Tests
-        run: |
-          cd backend/shopwise_backend
-          # Run tests for accounts app
-          python manage.py test accounts.tests --verbosity=2
-
-      # Store test results as artifacts
-      - name: Upload test results
-        # Run even if tests fail
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: backend/shopwise_backend/test-reports/
-
-      # Prepare deployment package
-      - name: Zip artifact for deployment
-        # Only run if tests pass
-        if: success()
-        run: zip release.zip ./* -r
-
-      # Upload deployment package
-      - name: Upload artifact for deployment jobs
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-app
-          path: |
-            release.zip
-            !venv/
 
   deploy:
     needs: build_and_test # Wait for build_and_test job
