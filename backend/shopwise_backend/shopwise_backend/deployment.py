@@ -40,8 +40,7 @@ DATABASES = {
         'HOST': CONNECTION_STR['host'],
         'USER': CONNECTION_STR['user'],
         'PASSWORD': CONNECTION_STR['password'],
-        
-        'PORT': os.environ['DB_PORT'],
+        'PORT': CONNECTION_STR['port'],
     }
 }
 
