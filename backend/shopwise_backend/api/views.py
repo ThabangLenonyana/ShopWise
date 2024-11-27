@@ -63,7 +63,12 @@ class ProductFilter(filters.FilterSet):
 )
 @method_decorator(cache_page(60*15), name='dispatch')
 class ProductListView(generics.ListAPIView):
-    queryset = Products.objects.select_related('retailer', 'category').prefetch_related('prices').all()
+    queryset = (
+        Products.objects.select_related('retailer', 'category')
+        .prefetch_related('prices')
+        .all()
+        .order_by('id')  
+    )
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
     filter_backends = (
@@ -72,7 +77,7 @@ class ProductListView(generics.ListAPIView):
         drf_filters.OrderingFilter
     )
     search_fields = ['name', 'description']
-    ordering_fields = ['created_at', 'name']
+    ordering_fields = ['created_at', 'name', 'id'] 
     pagination_class = ProductPagination
     
 class CategoryListView(generics.ListAPIView):

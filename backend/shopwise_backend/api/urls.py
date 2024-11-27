@@ -8,6 +8,6 @@ urlpatterns = [
     path('retailers/', RetailerListView.as_view(), name='retailer-list'),
     path('retailers/id=<int:pk>/', RetailerDetailView.as_view(), name='retailer-detail'),
     path('products/compare/', ProductsCompareView.as_view(), name='product-compare'),
-    path('products/id=<int:pk>/favorite/', FavoriteToggleView.as_view(), name='product-favorite'),
+    path('products/id=<int:pk>/favourite/', FavoriteToggleView.as_view(), name='product-favorite'),
     path('products/recommendations/', ProductRecommendationView.as_view(), name='product-recommendation'),
 ]
