@@ -8,6 +8,9 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from .services.recommendation_service import RecommendationService
 
 class ProductPagination(PageNumberPagination):
     page_size = 10
@@ -58,8 +61,14 @@ class ProductFilter(filters.FilterSet):
     ],
     responses=ProductSerializer(many=True)
 )
+@method_decorator(cache_page(60*15), name='dispatch')
 class ProductListView(generics.ListAPIView):
-    queryset = Products.objects.all()
+    queryset = (
+        Products.objects.select_related('retailer', 'category')
+        .prefetch_related('prices')
+        .all()
+        .order_by('id')  
+    )
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
     filter_backends = (
@@ -68,7 +77,7 @@ class ProductListView(generics.ListAPIView):
         drf_filters.OrderingFilter
     )
     search_fields = ['name', 'description']
-    ordering_fields = ['created_at', 'name']
+    ordering_fields = ['created_at', 'name', 'id'] 
     pagination_class = ProductPagination
     
 class CategoryListView(generics.ListAPIView):
@@ -229,3 +238,16 @@ class FavoriteToggleView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+@extend_schema(
+    description='Get product recommendations based on user interactions',
+    responses=ProductSerializer(many=True)
+)
+class ProductRecommendationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        recommendations = RecommendationService.get_recommendations(user)
+        serializer = ProductSerializer(recommendations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

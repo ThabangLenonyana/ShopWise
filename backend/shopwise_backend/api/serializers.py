@@ -20,7 +20,8 @@ from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
                     'id': 1,
                     'name': 'Retailer Name'
                 },
-                'created_at': '2021-01-01T00:00:00Z'
+                'created_at': '2021-01-01T00:00:00Z',
+                'current_price': 19.99
             }
         )
     ]
@@ -39,12 +40,36 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_current_price(self, obj):
         latest_price = Prices.objects.filter(product=obj).order_by('-created_at').first()
         return latest_price.price if latest_price else None
-        
+
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            'Valid Category Response',
+            value={
+                'id': 1,
+                'name': 'Category Name',
+                'created_at': '2021-01-01T00:00:00Z'
+            }
+        )
+    ]
+)
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
         fields = '__all__'
-        
+
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            'Valid Retailer Response',
+            value={
+                'id': 1,
+                'name': 'Retailer Name',
+                'created_at': '2021-01-01T00:00:00Z'
+            }
+        )
+    ]
+)
 class RetailerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Retailers
@@ -55,3 +80,13 @@ class FavouriteSerializer(serializers.ModelSerializer):
         model = Favourite
         fields = ['id', 'product', 'user', 'notify_price_drop', 'target_price', 'notes', 'created_at']
         read_only_fields = ['user', 'created_at']
+
+class RecommendationSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
+    product_name = serializers.CharField(max_length=500)
+    product_image_url = serializers.CharField(max_length=2000)
+    product_url = serializers.CharField(max_length=2000)
+    product_description = serializers.CharField()
+    category_name = serializers.CharField(max_length=255)
+    retailer_name = serializers.CharField(max_length=255)
+    current_price = serializers.FloatField()

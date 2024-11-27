@@ -66,3 +66,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+backend/shopwise_backend/accounts/migrations/__pycache__/__init__.cpython-312.pyc
+backend/shopwise_backend/api/migrations/__pycache__/__init__.cpython-312.pyc
+backend/shopwise_backend/api/migrations/__pycache__/__init__.cpython-312.pyc
+backend/shopwise_backend/api/migrations/__pycache__/__init__.cpython-312.pyc

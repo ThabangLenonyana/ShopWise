@@ -104,20 +104,8 @@ WSGI_APPLICATION = 'shopwise_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-<<<<<<< HEAD
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': os.getenv('DATABASE_PORT'),
-=======
-        'NAME': os.environ.get('POSTGRESQL_ADDON_DB'),
-        'USER': os.environ.get('POSTGRESQL_ADDON_USER'),
-        'PASSWORD': os.environ.get('POSTGRESQL_ADDON_PASSWORD'),
-        'HOST': os.environ.get('POSTGRESQL_ADDON_HOST'),
-        'PORT': os.environ.get('POSTGRESQL_ADDON_PORT'),
->>>>>>> 1b1de95c5b595c1684f9680d7b3b05c5e09a1599
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -181,10 +169,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FRONTEND_URL = os.environ.get('FRONTEND_URL')
+
+# Caching settings
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
