@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 
+
 class Categories(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -12,6 +13,7 @@ class Categories(models.Model):
     def __str__(self):
         return self.name
 
+
 class Retailers(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -22,6 +24,7 @@ class Retailers(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Products(models.Model):
     name = models.CharField(max_length=500)
@@ -39,8 +42,10 @@ class Products(models.Model):
     def __str__(self):
         return self.name
 
+
 class Prices(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE, related_name='prices')
+    product = models.ForeignKey(
+        Products, on_delete=models.CASCADE, related_name='prices')
     price = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -51,41 +56,50 @@ class Prices(models.Model):
     def __str__(self):
         return f"{self.product.name} - ${self.price}"
 
+
 class Favourite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Products, on_delete=models.CASCADE,  related_name='favourites')
+    product = models.ForeignKey(
+        Products, on_delete=models.CASCADE,  related_name='favourites')
     created_at = models.DateTimeField(auto_now_add=True)
     notify_price_drop = models.BooleanField(default=False)
     target_price = models.FloatField(null=True, blank=True)
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
-        db_table = 'favourites' 
+        db_table = 'favourites'
+        managed = False
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name}"
 
+
 class GroceryList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    g_list = models.TextField(max_length= 2000, blank=True, null=True)  # holds the list of items in the grocery list
+    # holds the list of items in the grocery list
+    g_list = models.TextField(max_length=2000, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         db_table = 'grocery_lists'
+        managed = False
 
     def __str__(self):
         return f"{self.user.username} - {self.name}"
 
+
 class GroceryListItem(models.Model):
-    grocery_list = models.ForeignKey(GroceryList, on_delete=models.CASCADE, related_name='items')
+    grocery_list = models.ForeignKey(
+        GroceryList, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     notes = models.TextField(blank=True, null=True)
-    
+
     class Meta:
         db_table = 'grocery_list_items'
+        managed = False
 
     def __str__(self):
         return f"{self.grocery_list.name} - {self.product.name} (x{self.quantity})"

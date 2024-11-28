@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+**/__pycache__/
 
 
 # Distribution / packaging
@@ -64,9 +65,5 @@ __pypackages__/
 env/
 venv/
 ENV/
+virtualenv/
 env.bak/
-venv.bak/
-backend/shopwise_backend/accounts/migrations/__pycache__/__init__.cpython-312.pyc
-backend/shopwise_backend/api/migrations/__pycache__/__init__.cpython-312.pyc
-backend/shopwise_backend/api/migrations/__pycache__/__init__.cpython-312.pyc
-backend/shopwise_backend/api/migrations/__pycache__/__init__.cpython-312.pyc
