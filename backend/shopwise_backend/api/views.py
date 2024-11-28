@@ -2,9 +2,9 @@ from rest_framework import generics, status
 from rest_framework import filters as drf_filters
 from rest_framework.pagination import PageNumberPagination
 from django_filters import rest_framework as filters
-from .serializers import ProductSerializer, RetailerSerializer, CategorySerializer, FavouriteSerializer
-from .models import Products, Categories, Retailers, Favourite
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
+from .serializers import ProductSerializer, RetailerSerializer, CategorySerializer, FavouriteSerializer, GroceryListSerializer
+from .models import Products, Categories, Retailers, Favourite, GroceryList, GroceryListItem
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, OpenApiResponse, OpenApiExample
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -251,3 +251,102 @@ class ProductRecommendationView(APIView):
         recommendations = RecommendationService.get_recommendations(user)
         serializer = ProductSerializer(recommendations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+@extend_schema(
+    description='Create a new grocery list with multiple items in bulk',
+    request={
+        'application/json': {
+            'type': 'object',
+            'properties': {
+                'list_name': {'type': 'string', 'description': 'Name of the grocery list'},
+                'items': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'product_id': {'type': 'integer', 'description': 'ID of the product'},
+                            'quantity': {'type': 'integer', 'description': 'Quantity of the product'},
+                            'notes': {'type': 'string', 'description': 'Optional notes for the item'}
+                        },
+                        'required': ['product_id']
+                    }
+                }
+            },
+            'required': ['list_name', 'items']
+        }
+    },
+    responses={
+        201: OpenApiResponse(
+            response=GroceryListSerializer,
+            description='Grocery list created successfully'
+        ),
+        400: OpenApiResponse(
+            description='Bad request - invalid input',
+            examples=[
+                OpenApiExample(
+                    'Invalid Input',
+                    value={'error': 'Invalid request format or product not found'}
+                )
+            ]
+        )
+    },
+    examples=[
+        OpenApiExample(
+            'Valid Request',
+            value={
+                'list_name': 'Weekly Groceries',
+                'items': [
+                    {
+                        'product_id': 1,
+                        'quantity': 2,
+                        'notes': 'Fresh ones please'
+                    },
+                    {
+                        'product_id': 3,
+                        'quantity': 1
+                    }
+                ]
+            }
+        )
+    ],
+    tags=['grocery-lists']
+)
+class BulkGroceryListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # Create grocery list
+            grocery_list = GroceryList.objects.create(
+                name=request.data.get('list_name'),
+                user=request.user
+            )
+
+            # Bulk create items
+            items_to_create = []
+            for item in request.data.get('items', []):
+                try:
+                    product = Products.objects.get(id=item['product_id'])
+                    items_to_create.append(
+                        GroceryListItem(
+                            grocery_list=grocery_list,
+                            product=product,
+                            quantity=item.get('quantity', 1),
+                            notes=item.get('notes', '')
+                        )
+                    )
+                except Products.DoesNotExist:
+                    continue
+
+            # Bulk create all items
+            GroceryListItem.objects.bulk_create(items_to_create)
+
+            # Return the created list with items
+            serializer = GroceryListSerializer(grocery_list)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
