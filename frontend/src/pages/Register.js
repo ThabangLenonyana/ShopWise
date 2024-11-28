@@ -201,7 +201,7 @@ export default function Register() {
                 <TextField
                   required
                   fullWidth
-                  id="email"
+                  id="username"
                   name="username"
                   placeholder="MyUsername"
                   autoComplete="username"
