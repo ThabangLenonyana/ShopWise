@@ -33,7 +33,6 @@ class User(AbstractUser):
 
     class Meta:
         db_table = 'users' 
-        managed = False 
         verbose_name = 'user'
         verbose_name_plural = 'users'
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Products, Categories, Retailers, Prices, Favourite
+from .models import Products, Categories, Retailers, Prices, Favourite, GroceryListItem, GroceryList
 from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
 
 @extend_schema_serializer(
@@ -90,3 +90,17 @@ class RecommendationSerializer(serializers.Serializer):
     category_name = serializers.CharField(max_length=255)
     retailer_name = serializers.CharField(max_length=255)
     current_price = serializers.FloatField()
+
+
+class GroceryListItemSerializer(serializers.Serializer):
+    class Meta:
+        model = GroceryListItem
+        fields = ['id', 'name', 'quantity', 'notes']
+
+class GroceryListSerializer(serializers.ModelSerializer):
+    items = GroceryListItemSerializer(many=True)
+
+    class Meta:
+        model = GroceryList
+        fields = ['id', 'name', 'items', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
