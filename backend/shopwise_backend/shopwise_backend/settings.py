@@ -104,8 +104,12 @@ WSGI_APPLICATION = 'shopwise_backend.wsgi.application'
 DATABASES = {
     # sqlite3 database for development
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRESQL_ADDON_DB'),
+        'HOST': os.environ.get('POSTGRESQL_ADDON_HOST'),
+        'USER': os.environ.get('POSTGRESQL_ADDON_USER'),
+        'PASSWORD': os.environ.get('POSTGRESQL_ADDON_PASSWORD'),
+        'PORT': os.environ.get('POSTGRESQL_ADDON_PORT'),
     }
 }
 

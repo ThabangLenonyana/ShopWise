@@ -12,10 +12,22 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from .services.recommendation_service import RecommendationService
 
+
 class ProductPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 24
     page_size_query_param = 'page_size'
     max_page_size = 100
+
+    def get_paginated_response(self, data):
+        return Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+            'total_pages': self.page.paginator.num_pages,
+            'current_page': self.page.number,
+        })
+
 
 class ProductFilter(filters.FilterSet):
     retailer = filters.ModelChoiceFilter(queryset=Retailers.objects.all())
@@ -24,6 +36,7 @@ class ProductFilter(filters.FilterSet):
     class Meta:
         model = Products
         fields = ['retailer', 'category']
+
 
 @extend_schema(
     description='List, filter and search products',
@@ -37,11 +50,11 @@ class ProductFilter(filters.FilterSet):
         OpenApiParameter(
             name='retailer',
             description='Filter by retailer ID',
-            required=False, 
+            required=False,
             type=OpenApiTypes.INT
         ),
         OpenApiParameter(
-            name='category', 
+            name='category',
             description='Filter by category ID',
             required=False,
             type=OpenApiTypes.INT
@@ -67,7 +80,7 @@ class ProductListView(generics.ListAPIView):
         Products.objects.select_related('retailer', 'category')
         .prefetch_related('prices')
         .all()
-        .order_by('id')  
+        .order_by('id')
     )
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
@@ -77,17 +90,20 @@ class ProductListView(generics.ListAPIView):
         drf_filters.OrderingFilter
     )
     search_fields = ['name', 'description']
-    ordering_fields = ['created_at', 'name', 'id'] 
+    ordering_fields = ['created_at', 'name', 'id']
     pagination_class = ProductPagination
-    
+
+
 class CategoryListView(generics.ListAPIView):
     queryset = Categories.objects.all()
     serializer_class = CategorySerializer
-    
+
+
 class RetailerListView(generics.ListAPIView):
     queryset = Retailers.objects.all()
     serializer_class = RetailerSerializer
-    
+
+
 @extend_schema(
     description='Get product details by ID',
     parameters=[
@@ -105,8 +121,9 @@ class ProductDetailView(generics.RetrieveAPIView):
     queryset = Products.objects.all()
     serializer_class = ProductSerializer
 
+
 @extend_schema(
-    description='Get retailer details by ID', 
+    description='Get retailer details by ID',
     parameters=[
         OpenApiParameter(
             name='pk',
@@ -121,7 +138,8 @@ class ProductDetailView(generics.RetrieveAPIView):
 class RetailerDetailView(generics.RetrieveAPIView):
     queryset = Retailers.objects.all()
     serializer_class = RetailerSerializer
-    
+
+
 @extend_schema(
     description='Compare product prices across different retailers',
     parameters=[
@@ -141,22 +159,22 @@ class ProductsCompareView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         search_term = request.query_params.get('search', '').strip()
-        
+
         if not search_term:
             return Response(
-                {"error": "Please provide a search term"}, 
+                {"error": "Please provide a search term"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         # Search products case-insensitively
         similar_products = (
             Products.objects.filter(name__icontains=search_term)
-            .select_related('retailer', 'category') 
+            .select_related('retailer', 'category')
         )
 
         if not similar_products.exists():
             return Response(
-                {"message": "No products found matching your search"}, 
+                {"message": "No products found matching your search"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -168,6 +186,7 @@ class ProductsCompareView(generics.GenericAPIView):
             comparison[retailer_name].append(ProductSerializer(product).data)
 
         return Response(comparison, status=status.HTTP_200_OK)
+
 
 @extend_schema(
     description='Add or remove a product from user favorites',
@@ -188,27 +207,27 @@ class ProductsCompareView(generics.GenericAPIView):
 class FavoriteToggleView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = FavouriteSerializer
-    
+
     def post(self, request, pk):
         try:
             product = Products.objects.get(pk=pk)
         except Products.DoesNotExist:
             return Response(
-                {"error": "Product not found"}, 
+                {"error": "Product not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
-            
+
         favorite, created = Favourite.objects.get_or_create(
             user=request.user,
             product=product,
         )
-        
+
         if not created:
             favorite.delete()
             return Response({
                 "message": f"Removed {product.name} from favorites"
             })
-            
+
         serializer = self.serializer_class(favorite)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -220,24 +239,25 @@ class FavoriteToggleView(APIView):
             )
         except Favourite.DoesNotExist:
             return Response(
-                {"error": "Product not in favorites"}, 
+                {"error": "Product not in favorites"},
                 status=status.HTTP_404_NOT_FOUND
             )
-            
+
         serializer = self.serializer_class(
             favorite,
             data=request.data,
             partial=True
         )
-        
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-            
+
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
 
 @extend_schema(
     description='Get product recommendations based on user interactions',
@@ -251,6 +271,7 @@ class ProductRecommendationView(APIView):
         recommendations = RecommendationService.get_recommendations(user)
         serializer = ProductSerializer(recommendations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 @extend_schema(
     description='Create a new grocery list with multiple items in bulk',
@@ -347,6 +368,6 @@ class BulkGroceryListCreateView(APIView):
 
         except Exception as e:
             return Response(
-                {'error': str(e)}, 
+                {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
